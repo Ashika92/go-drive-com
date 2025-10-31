@@ -1,16 +1,37 @@
 @import "tailwindcss";
 
+/* Light and dark mode global styling */
+@layer base {
+  html {
+    @apply bg-gradient-to-r from-purple-300 to-cyan-200 text-black transition-colors duration-500;
+  }
 
-/* Light Mode */
-body.light {
-  background: linear-gradient(to right, #d8b4fe, #a5f3fc);
-  color: #000000;
-  transition: background-color 0.3s, color 0.3s;
+  html.dark {
+    @apply bg-[#1a0033] text-white transition-colors duration-500;
+  }
+
+  body {
+    @apply bg-transparent text-inherit;
+  }
+
+  h1, h2, h3, h4, h5, h6, p, span {
+    @apply transition-colors duration-300;
+  }
+
+  html.dark h1,
+  html.dark h2,
+  html.dark h3,
+  html.dark h4,
+  html.dark h5,
+  html.dark h6,
+  html.dark p,
+  html.dark span {
+    @apply text-white;
+  }
 }
-
-/* Dark Mode */
-body.dark {
-  background-color: #20024a;
-  color: #ffffff;
-  transition: background-color 0.3s, color 0.3s;
+/* Prevent white boxes from turning dark in dark mode */
+@layer components {
+  .card-box {
+    @apply bg-white text-black dark:bg-white dark:text-black rounded-lg shadow transition-colors duration-500;
+  }
 }

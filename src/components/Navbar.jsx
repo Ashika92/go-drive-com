@@ -1,16 +1,19 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const totalQuantity = useSelector((state) => state.cart.totalQuantity);
+  
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     navigate("/");
   };
-
-  return (
+  
+return (
     <nav
       className={`${
         theme === "light"
@@ -35,16 +38,19 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
           {menuOpen ? "" : "☰"}
         </button>
 
-        {/* Links (hidden on mobile) */}
+        {/* Nav Links */}
         <div
-  className={`flex-col md:flex md:flex-row md:items-center md:space-x-6 text-lg font-medium absolute md:static left-0 w-full md:w-auto 
-  ${theme === "light" ? "bg-gradient-to-r from-purple-300 to-cyan-200 text-black" : "bg-gradient-to-r from-gray-900 via-gray-950 to-black text-white"}
-  md:bg-transparent md:from-none md:to-none md:bg-none
-  p-5 md:p-0 z-50 transition-all duration-300 ease-in-out ${
-    menuOpen ? "top-16 opacity-100" : "-top-96 opacity-0 md:opacity-100"
-  }`}
->
-
+          className={`flex-col md:flex md:flex-row md:items-center md:space-x-6 text-lg font-medium absolute md:static left-0 w-full md:w-auto 
+          ${
+            theme === "light"
+              ? "bg-gradient-to-r from-purple-300 to-cyan-200 text-black"
+              : "bg-gradient-to-r from-gray-900 via-gray-950 to-black text-white"
+          }
+          md:bg-transparent md:from-none md:to-none md:bg-none
+          p-5 md:p-0 z-50 transition-all duration-300 ease-in-out ${
+            menuOpen ? "top-16 opacity-100" : "-top-96 opacity-0 md:opacity-100"
+          }`}
+        >
           <Link
             to="/"
             className="block py-2 md:py-0 hover:text-purple-600 dark:hover:text-cyan-300 transition duration-300"
@@ -52,6 +58,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
           >
             Home
           </Link>
+
           <Link
             to="/about"
             className="block py-2 md:py-0 hover:text-purple-600 dark:hover:text-cyan-300 transition duration-300"
@@ -59,6 +66,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
           >
             About Us
           </Link>
+
           <Link
             to="/cars"
             className="block py-2 md:py-0 hover:text-purple-600 dark:hover:text-cyan-300 transition duration-300"
@@ -66,6 +74,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
           >
             Cars
           </Link>
+
           <Link
             to="/contact"
             className="block py-2 md:py-0 hover:text-purple-600 dark:hover:text-cyan-300 transition duration-300"
@@ -74,6 +83,24 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
             Contact Us
           </Link>
 
+          {/* 🛒 Cart Icon */}
+          <div
+            className="relative cursor-pointer md:ml-2 mt-2 md:mt-0"
+            onClick={() => {
+              navigate("/cart");
+              setMenuOpen(false);
+            }}
+          >
+            <span className="text-2xl">🛒</span>
+            
+            {totalQuantity > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full px-2 text-sm">
+                {totalQuantity}
+              </span>
+            )}
+          </div>
+
+          {/* Login / Logout */}
           {isLoggedIn ? (
             <button
               onClick={() => {
@@ -96,18 +123,19 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme }) {
 
           {/* Theme Toggle */}
           <button
-  onClick={() => {
-    toggleTheme();
-    setMenuOpen(false);
-  }}
-  className={`mt-3 md:mt-0 px-3 py-1 rounded transition duration-300 
-  ${theme === "light" 
-    ? "bg-blue-900 text-white hover:bg-blue-900" 
-    : "bg-gray-200 text-black hover:bg-gray-300"}`}
->
-  {theme === "light" ? "🌙" : "☀️"}
-</button>
-
+            onClick={() => {
+              toggleTheme();
+              setMenuOpen(false);
+            }}
+            className={`mt-3 md:mt-0 px-3 py-1 rounded transition duration-300 
+            ${
+              theme === "light"
+                ? "bg-blue-900 text-white hover:bg-blue-900"
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+          >
+            {theme === "light" ? "🌙" : "☀️"}
+          </button>
         </div>
       </div>
     </nav>
