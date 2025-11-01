@@ -7,7 +7,7 @@ export const products = [
   { id: 5, name: "Maruti Suzuki Brezza", model: "Maruti", price: 1500, availability: false, image: "https://gaadiwaadi.com/wp-content/uploads/2021/12/2022-maruti-suzuki-brezza-rendered.jpg" },
   { id: 6, name: "Hundai Exter", model: "Hundai", price: 999, availability: true, image: "https://acko-cms.ackoassets.com/hyundai_exter_first_look_review_c63e932364.png" },
   { id: 7, name: "Hundai Creta", model: "Hundai", price: 1500, availability: true, image: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Creta/8667/1755765115423/front-left-side-47.jpg" },
-  { id: 8, name: "Hundai Venue", model: "Hundai", price: 999, availability: false, image: "https://trident-group.s3.ap-south-1.amazonaws.com/hyundai/models/colors/1698929086.png" },
+  { id: 8, name: "Hundai Venue", model: "Hundai", price: 999, availability: true, image: "https://trident-group.s3.ap-south-1.amazonaws.com/hyundai/models/colors/1698929086.png" },
   { id: 9, name: "Hundai i20", model: "Hundai", price: 899, availability: true, image: "https://dwarakahyundai.com/wp-content/uploads/2024/09/Starry-Night.jpg" },
   { id: 10, name: "Hundai NEXO", model: "Hundai", price: 1200, availability: true, image: "https://vision-mobility.de/sites/default/files/public/styles/_news_1050x700_/public/images-news-teaser/hyundai-nexo-001_0.jpg" },
   { id: 11, name: "Toyota Glanza", model: "Toyota", price: 999, availability: false, image: "https://c.ndtvimg.com/2019-11/7a49pt38_toyota-glanza-review_625x300_19_November_19.jpg" },

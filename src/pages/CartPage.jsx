@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
+import { addToWishlist } from "../features/wishlist/wishlistSlice";
+import toast from "react-hot-toast";
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
@@ -237,11 +239,15 @@ const CheckoutPage = () => {
 
   {/* Wishlist Button */}
   <button
-    onClick={() => alert(`${item.name} added to wishlist 💜`)} // placeholder for now
-    className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-xs transition"
-  >
-    Wishlist
-  </button>
+  onClick={() => {
+    dispatch(addToWishlist(item));
+    dispatch(removeFromCart(item.id));
+    toast.success(`${item.name} moved to Wishlist 💜`);
+  }}
+  className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-xs transition"
+>
+  Wishlist
+</button>
 </div>
 
               </div>
@@ -280,11 +286,15 @@ const CheckoutPage = () => {
             Total Amount: ₹{grandTotal.toFixed(2)}
           </h3>
           <button
-            onClick={() => alert("Booking Confirmed! ✅")}
-            className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
-          >
-            Proceed to Checkout
-          </button>
+  onClick={() => {
+    alert("Booking Confirmed! ✅");
+    dispatch({ type: "cart/clearCart" }); // empty cart instantly
+  }}
+  className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
+>
+  Proceed to Checkout
+</button>
+
         </div>
       </div>
     </div>

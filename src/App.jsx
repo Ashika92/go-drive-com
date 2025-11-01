@@ -4,39 +4,44 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Cars from "./components/CarList";
+import CarList from "./components/CarList";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Footer from "./components/Footer";
 import CarDetails from "./components/CarDetails";
 import AgencyDashboard from "./pages/AgencyDashboard";
 import CartPage from "./pages/CartPage";
+import WishlistPage from "./pages/WishlistPage";
+import MyOrdersPage from "./pages/MyOrdersPage";
+
 import "./index.css";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 🧠 Persistent states
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+  const [userRole, setUserRole] = useState(localStorage.getItem("userRole") || "customer");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const location = useLocation();
 
-  // 🌙 Theme state (persisted in localStorage)
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
-  // Apply theme to <html> element
+  // 🌓 Apply theme
   useEffect(() => {
     const html = document.documentElement;
-    if (theme === "dark") {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
+    if (theme === "dark") html.classList.add("dark");
+    else html.classList.remove("dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Toggle light/dark mode
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+  const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
-  // Hide Navbar & Footer on Login page
+  // 💾 Keep login + role persistent
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", isLoggedIn);
+    localStorage.setItem("userRole", userRole);
+  }, [isLoggedIn, userRole]);
+
+  // 🚫 Hide Navbar & Footer on login page
   const hideLayout = location.pathname === "/login";
 
   return (
@@ -47,34 +52,61 @@ function App() {
           : "bg-gradient-to-r from-gray-900 via-gray-950 to-black text-white"
       }`}
     >
-      {/* Navbar */}
+      {/* 🧭 Navbar */}
       {!hideLayout && (
         <Navbar
           isLoggedIn={isLoggedIn}
           setIsLoggedIn={setIsLoggedIn}
           theme={theme}
           toggleTheme={toggleTheme}
+          userRole={userRole}
         />
       )}
 
-      {/* Page Routes */}
+      {/* 🗺️ Page Routes */}
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/cars" element={<Cars />} />
+
+          {/* 🚘 Role-based /cars route */}
+          <Route
+            path="/cars"
+            element={
+              userRole === "agency" ? (
+                <AgencyDashboard
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  userRole={userRole}
+                />
+              ) : (
+                <CarList userRole={userRole} theme={theme} />
+              )
+            }
+          />
+
           <Route path="/contact" element={<Contact />} />
+
+          {/* 🔑 Login route */}
           <Route
             path="/login"
-            element={<Login setIsLoggedIn={setIsLoggedIn} />}
+            element={
+              <Login
+                setIsLoggedIn={setIsLoggedIn}
+                setUserRole={setUserRole}
+                theme={theme}
+              />
+            }
           />
+
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
+          <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/cars/:id" element={<CarDetails />} />
-          <Route path="/agency-dashboard" element={<AgencyDashboard />} />
         </Routes>
       </div>
 
-      {/* Footer */}
+      {/* ⚓ Footer */}
       {!hideLayout && <Footer />}
     </div>
   );
