@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login({ setIsLoggedIn, setUserRole, theme }) {
-  const [userRole, setRole] = useState("customer"); // ✅ changed from userType
+  const [userRole, setRole] = useState("customer");
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -17,7 +17,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
 
   const navigate = useNavigate();
 
-  // 🔄 Clear fields when toggling between forms
+  // 🔄 Clear fields when switching forms or roles
   useEffect(() => {
     setFormData({
       name: "",
@@ -34,14 +34,30 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ✨ Helper validation functions
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidPhone = (phone) => /^[0-9]{10}$/.test(phone);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ Validation
+    // ✅ Sign Up Validation
     if (isSignUp) {
       if (userRole === "customer") {
         if (!formData.name || !formData.email || !formData.phone || !formData.password) {
           alert("Please fill in all required fields.");
+          return;
+        }
+        if (!isValidEmail(formData.email)) {
+          alert("Please enter a valid email address.");
+          return;
+        }
+        if (!isValidPhone(formData.phone)) {
+          alert("Please enter a valid 10-digit phone number.");
+          return;
+        }
+        if (formData.password.length < 4) {
+          alert("Password must be at least 4 characters long.");
           return;
         }
       } else {
@@ -55,11 +71,37 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
           alert("Please fill in all required fields.");
           return;
         }
+        if (!isValidPhone(formData.phone)) {
+          alert("Please enter a valid 10-digit phone number.");
+          return;
+        }
+        if (formData.password.length < 4) {
+          alert("Password must be at least 4 characters long.");
+          return;
+        }
       }
-    } else {
+    }
+
+    // ✅ Login Validation
+    else {
       if (userRole === "customer") {
         if (!formData.email || !formData.password) {
-          alert("Please enter your email/phone and password.");
+          alert("Please enter your email or phone number and password.");
+          return;
+        }
+
+        // check whether email or phone valid
+        const isEmail = formData.email.includes("@");
+        if (isEmail && !isValidEmail(formData.email)) {
+          alert("Please enter a valid email address.");
+          return;
+        } else if (!isEmail && !isValidPhone(formData.email)) {
+          alert("Please enter a valid 10-digit phone number.");
+          return;
+        }
+
+        if (formData.password.length < 4) {
+          alert("Password must be at least 4 characters long.");
           return;
         }
       } else {
@@ -67,17 +109,27 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
           alert("Please enter your username and password.");
           return;
         }
+        if (formData.password.length < 4) {
+          alert("Password must be at least 4 characters long.");
+          return;
+        }
       }
     }
 
-    // ✅ Save login
+    // ✅ Save login info
     setIsLoggedIn(true);
     setUserRole(userRole);
     localStorage.setItem("userRole", userRole);
     localStorage.setItem("isLoggedIn", "true");
 
-    // Navigate based on role
-    navigate("/cars");
+    // ✅ Redirect after login
+    const redirectPath = localStorage.getItem("redirectAfterLogin");
+    if (redirectPath) {
+      localStorage.removeItem("redirectAfterLogin");
+      navigate(redirectPath);
+    } else {
+      navigate("/cars");
+    }
   };
 
   return (

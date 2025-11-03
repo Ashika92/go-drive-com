@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
 import EditCarModal from "./EditCarModal"; // ✅ import the modal
 
-const CarItem = ({ car, userType = "customer" }) => {
+const CarItem = ({ car, userRole = "customer" }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isEditOpen, setIsEditOpen] = useState(false); // ✅ modal control
@@ -20,7 +20,7 @@ const CarItem = ({ car, userType = "customer" }) => {
   const pricePerHour = getPricePerHour(car.price);
 
   const handleCardClick = () => {
-    if (userType !== "agency") {
+    if (userRole !== "agency") {
       navigate(`/cars/${car.id}`);
     }
   };
@@ -45,7 +45,7 @@ const CarItem = ({ car, userType = "customer" }) => {
 
   const handleEdit = (e) => {
     e.stopPropagation();
-    setIsEditOpen(true); // ✅ open the modal instead of navigating
+    setIsEditOpen(true); // ✅ open the modal
   };
 
   const handleRemove = (e) => {
@@ -103,8 +103,8 @@ const CarItem = ({ car, userType = "customer" }) => {
             {car.availability ? "Available" : "Not Available"}
           </p>
 
-          {/* ✅ Conditionally show buttons based on userType */}
-          {userType?.toLowerCase() === "agency" ? (
+          {/* ✅ Conditionally show buttons based on userRole */}
+          {userRole?.toLowerCase() === "agency" ? (
             <div className="flex gap-2 mt-4">
               <button
                 onClick={handleEdit}
@@ -137,10 +137,7 @@ const CarItem = ({ car, userType = "customer" }) => {
 
       {/* ✅ Show edit modal if open */}
       {isEditOpen && (
-        <EditCarModal
-          car={car}
-          onClose={() => setIsEditOpen(false)}
-        />
+        <EditCarModal car={car} onClose={() => setIsEditOpen(false)} />
       )}
     </>
   );

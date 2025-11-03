@@ -40,8 +40,8 @@ const WishlistPage = () => {
               className="w-24 h-20 object-cover rounded-md border border-gray-300"
             />
             <div>
-              <h3 className="text-lg font-semibold">{item.name}</h3>
-              <p className="text-gray-500">₹{item.pricePerDay || item.price}/day</p>
+              <h3 className="text-lg  text-black font-semibold">{item.name}</h3>
+              <p className="text-gray-800">₹{item.pricePerDay || item.price}/day</p>
             </div>
           </div>
 

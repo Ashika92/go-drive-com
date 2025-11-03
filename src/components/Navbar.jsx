@@ -2,17 +2,22 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "customer" }) {
+function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "customer", setUserRole }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const totalQuantity = useSelector((state) => state.cart.totalQuantity);
 
+  // ✅ Updated logout logic (fixed)
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setUserRole && setUserRole("customer"); // reset role safely
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userRole");
     navigate("/");
   };
 
   const isAgency = userRole === "agency";
+  const isCustomer = userRole === "customer";
 
   return (
     <nav
@@ -40,8 +45,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "cus
           {menuOpen ? "" : "☰"}
         </button>
 
-        {/* Navigation Links */}
-        {/* ✅ Mobile Menu with gradient background */}
+        {/* Mobile Menu */}
         <div
           className={`md:hidden absolute left-0 w-full p-4 transition-all duration-300 ease-in-out z-40
             ${
@@ -56,8 +60,9 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "cus
             }`}
         >
           <NavbarLinks
-            isAgency={isAgency}
             isLoggedIn={isLoggedIn}
+            isAgency={isAgency}
+            isCustomer={isCustomer}
             handleLogout={handleLogout}
             theme={theme}
             toggleTheme={toggleTheme}
@@ -67,11 +72,12 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "cus
           />
         </div>
 
-        {/* ✅ Desktop Menu — transparent background */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex md:items-center md:space-x-5 text-[15px] font-medium bg-transparent">
           <NavbarLinks
-            isAgency={isAgency}
             isLoggedIn={isLoggedIn}
+            isAgency={isAgency}
+            isCustomer={isCustomer}
             handleLogout={handleLogout}
             theme={theme}
             toggleTheme={toggleTheme}
@@ -85,8 +91,9 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "cus
 }
 
 function NavbarLinks({
-  isAgency,
   isLoggedIn,
+  isAgency,
+  isCustomer,
   handleLogout,
   theme,
   toggleTheme,
@@ -99,6 +106,7 @@ function NavbarLinks({
 
   return (
     <>
+      {/* Always visible links */}
       <Link to="/" className={commonLinkClass} onClick={closeMenu}>
         Home
       </Link>
@@ -106,13 +114,11 @@ function NavbarLinks({
         About Us
       </Link>
 
+      {/* Agency or Customer or Default */}
       {isAgency ? (
         <>
           <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
             Agency Dashboard
-          </Link>
-          <Link to="/contact" className={commonLinkClass} onClick={closeMenu}>
-            Contact Us
           </Link>
         </>
       ) : (
@@ -120,34 +126,47 @@ function NavbarLinks({
           <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
             Cars
           </Link>
+        </>
+      )}
+
+      {/* Contact Us – always visible */}
+      <Link to="/contact" className={commonLinkClass} onClick={closeMenu}>
+        Contact Us
+      </Link>
+
+      {/* 🛒 Cart – visible for default (logged-out) and customers */}
+      {(!isLoggedIn || isCustomer) && (
+        <div
+          className="relative cursor-pointer md:ml-2 mt-2 md:mt-0"
+          onClick={() => {
+            navigate("/cart");
+            closeMenu && closeMenu();
+          }}
+          role="button"
+          aria-label="Go to cart"
+        >
+          <span className="text-3xl">🛒</span>
+          {totalQuantity > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full px-2 text-xs font-semibold">
+              {totalQuantity}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Customer-only options (after contact + cart) */}
+      {isLoggedIn && isCustomer && (
+        <>
           <Link to="/wishlist" className={commonLinkClass} onClick={closeMenu}>
             Wishlist
           </Link>
           <Link to="/my-orders" className={commonLinkClass} onClick={closeMenu}>
             My Orders
           </Link>
-
-          {/* Cart */}
-          <div
-            className="relative cursor-pointer md:ml-2 mt-2 md:mt-0"
-            onClick={() => {
-              navigate("/cart");
-              closeMenu && closeMenu();
-            }}
-            role="button"
-            aria-label="Go to cart"
-          >
-            <span className="text-3xl">🛒</span>
-            {totalQuantity > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full px-2 text-xs font-semibold">
-                {totalQuantity}
-              </span>
-            )}
-          </div>
         </>
       )}
 
-      {/* Login/Logout */}
+      {/* Login / Logout */}
       {isLoggedIn ? (
         <button
           onClick={() => {

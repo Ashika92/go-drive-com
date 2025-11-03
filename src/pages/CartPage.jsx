@@ -185,7 +185,7 @@ const CheckoutPage = () => {
                         >
                           -
                         </button>
-                        <span className="font-semibold">{hours}</span>
+                        <span className="font-semibold text-black">{hours}</span>
                         <button
                           onClick={() =>
                             handleItemChange(index, "hours", hours + 1)
@@ -286,14 +286,27 @@ const CheckoutPage = () => {
             Total Amount: ₹{grandTotal.toFixed(2)}
           </h3>
           <button
+  
   onClick={() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+    if (!isLoggedIn) {
+      // Save the current page so we can return after login
+      localStorage.setItem("redirectAfterLogin", "/cart");
+      toast.error("Please login before proceeding to checkout!");
+      navigate("/login");
+      return;
+    }
+
+    // Continue normal checkout for logged-in users
     alert("Booking Confirmed! ✅");
-    dispatch({ type: "cart/clearCart" }); // empty cart instantly
+    dispatch({ type: "cart/clearCart" });
   }}
   className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
 >
   Proceed to Checkout
 </button>
+
 
         </div>
       </div>

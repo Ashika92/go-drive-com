@@ -21,7 +21,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("isLoggedIn") === "true"
   );
-  const [userRole, setUserRole] = useState(localStorage.getItem("userRole") || "customer");
+  const [userRole, setUserRole] = useState(
+    localStorage.getItem("userRole") || "customer"
+  );
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const location = useLocation();
 
@@ -33,7 +35,8 @@ function App() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleTheme = () =>
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
   // 💾 Keep login + role persistent
   useEffect(() => {
@@ -60,6 +63,7 @@ function App() {
           theme={theme}
           toggleTheme={toggleTheme}
           userRole={userRole}
+          setUserRole={setUserRole} // ✅ Added line
         />
       )}
 

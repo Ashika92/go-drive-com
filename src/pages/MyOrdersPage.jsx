@@ -1,6 +1,9 @@
 /* eslint-disable */
 
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { clearOrders } from "../features/orders/ordersSlice";
+
 
 const MyOrdersPage = ({ mode = "user" }) => {
   const [orders, setOrders] = useState([

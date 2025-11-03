@@ -2,10 +2,13 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { products } from "../data/cars";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 
 const CarDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const car = products.find((c) => c.id === parseInt(id));
 
   if (!car) {
@@ -44,6 +47,24 @@ const CarDetails = () => {
   else if (car.price <= 1300) pricePerHour = 149;
   else if (car.price <= 1500) pricePerHour = 179;
   else pricePerHour = 199;
+
+  // 🛒 Add to Cart handler
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        id: car.id,
+        name: car.name,
+        price: car.price,
+        image: car.image,
+        fuel: fuel,
+        pricePerHour: pricePerHour,
+        pricePerDay: car.price,
+      })
+    );
+
+    // Optional: small confirmation
+    alert(`${car.name} has been added to your cart.`);
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -88,25 +109,29 @@ const CarDetails = () => {
           </div>
 
           <div className="mt-4 text-gray-800 dark:text-gray-100 space-y-1">
-  <p>
-    <strong className="text-gray-900 dark:text-white">Seats:</strong>{" "}
-    <span className="text-gray-700 dark:text-gray-200">{seats}</span>
-  </p>
-  <p>
-    <strong className="text-gray-900 dark:text-white">Fuel:</strong>{" "}
-    <span className="text-gray-700 dark:text-gray-200">{fuel}</span>
-  </p>
-  <p>
-    <strong className="text-gray-900 dark:text-white">Transmission:</strong>{" "}
-    <span className="text-gray-700 dark:text-gray-200">{transmission}</span>
-  </p>
-  <p>
-    <strong className="text-gray-900 dark:text-white">Mileage:</strong>{" "}
-    <span className="text-gray-700 dark:text-gray-200">{mileage} kmpl</span>
-  </p>
-</div>
-
-
+            <p>
+              <strong className="text-gray-900 dark:text-white">Seats:</strong>{" "}
+              <span className="text-gray-700 dark:text-gray-200">{seats}</span>
+            </p>
+            <p>
+              <strong className="text-gray-900 dark:text-white">Fuel:</strong>{" "}
+              <span className="text-gray-700 dark:text-gray-200">{fuel}</span>
+            </p>
+            <p>
+              <strong className="text-gray-900 dark:text-white">
+                Transmission:
+              </strong>{" "}
+              <span className="text-gray-700 dark:text-gray-200">
+                {transmission}
+              </span>
+            </p>
+            <p>
+              <strong className="text-gray-900 dark:text-white">Mileage:</strong>{" "}
+              <span className="text-gray-700 dark:text-gray-200">
+                {mileage} kmpl
+              </span>
+            </p>
+          </div>
 
           <div className="mt-4">
             <strong className="text-gray-800 dark:text-gray-200">Features:</strong>
@@ -123,6 +148,7 @@ const CarDetails = () => {
 
           <div className="mt-5">
             <button
+              onClick={handleAddToCart}
               disabled={!car.availability}
               className={`px-6 py-3 rounded-lg transition font-medium ${
                 car.availability
