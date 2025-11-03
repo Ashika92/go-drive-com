@@ -98,13 +98,15 @@ const CheckoutPage = () => {
                     {item.name}
                   </h3>
                   <p className="text-sm text-gray-600">
-  Fuel: <span className="text-gray-600 dark:text-gray-200">
-    {item.fuel || "Not specified"}
-  </span>
-</p>
-<p className="text-gray-600 dark:text-gray-300">
-  ₹{item.pricePerHour || 0}/hour | ₹{item.pricePerDay || item.price || 0}/day
-</p>
+                    Fuel:{" "}
+                    <span className="text-gray-600 dark:text-gray-200">
+                      {item.fuel || "Not specified"}
+                    </span>
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    ₹{item.pricePerHour || 0}/hour | ₹
+                    {item.pricePerDay || item.price || 0}/day
+                  </p>
 
                   {/* Quantity Selector */}
                   <div className="flex items-center gap-2 mt-1">
@@ -185,7 +187,9 @@ const CheckoutPage = () => {
                         >
                           -
                         </button>
-                        <span className="font-semibold text-black">{hours}</span>
+                        <span className="font-semibold text-black">
+                          {hours}
+                        </span>
                         <button
                           onClick={() =>
                             handleItemChange(index, "hours", hours + 1)
@@ -229,27 +233,26 @@ const CheckoutPage = () => {
                 </p>
 
                 <div className="flex gap-2 mt-1">
-  {/* Remove Button */}
-  <button
-    onClick={() => dispatch(removeFromCart(item.id))}
-    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs transition"
-  >
-    Remove
-  </button>
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => dispatch(removeFromCart(item.id))}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs transition"
+                  >
+                    Remove
+                  </button>
 
-  {/* Wishlist Button */}
-  <button
-  onClick={() => {
-    dispatch(addToWishlist(item));
-    dispatch(removeFromCart(item.id));
-    toast.success(`${item.name} moved to Wishlist 💜`);
-  }}
-  className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-xs transition"
->
-  Wishlist
-</button>
-</div>
-
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={() => {
+                      dispatch(addToWishlist(item));
+                      dispatch(removeFromCart(item.id));
+                      toast.success(`${item.name} moved to Wishlist 💜`);
+                    }}
+                    className="bg-purple-700 hover:bg-purple-600 text-white px-3 py-1 rounded-md text-xs transition"
+                  >
+                    Wishlist
+                  </button>
+                </div>
               </div>
             </div>
           );
@@ -286,28 +289,71 @@ const CheckoutPage = () => {
             Total Amount: ₹{grandTotal.toFixed(2)}
           </h3>
           <button
-  
-  onClick={() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            onClick={() => {
+              const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-    if (!isLoggedIn) {
-      // Save the current page so we can return after login
-      localStorage.setItem("redirectAfterLogin", "/cart");
-      toast.error("Please login before proceeding to checkout!");
-      navigate("/login");
-      return;
-    }
+              // ✅ Validation before checkout
+              for (let i = 0; i < cartItems.length; i++) {
+                const { rentalType, startDate, endDate, hours } =
+                  itemDetails[i];
 
-    // Continue normal checkout for logged-in users
-    alert("Booking Confirmed! ✅");
-    dispatch({ type: "cart/clearCart" });
-  }}
-  className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
->
-  Proceed to Checkout
-</button>
+                if (!rentalType) {
+                  toast.error(
+                    `Please select rental type for ${cartItems[i].name}`
+                  );
+                  return;
+                }
 
+                if (rentalType === "hour") {
+                  if (!startDate) {
+                    toast.error(`Please select date for ${cartItems[i].name}`);
+                    return;
+                  }
+                  if (hours <= 0) {
+                    toast.error(
+                      `Please set valid hours for ${cartItems[i].name}`
+                    );
+                    return;
+                  }
+                } else {
+                  if (!startDate || !endDate) {
+                    toast.error(
+                      `Please select start and end dates for ${cartItems[i].name}`
+                    );
+                    return;
+                  }
 
+                  // ✅ New: Validate end date > start date (cross-month compatible)
+                  const start = new Date(startDate);
+                  const end = new Date(endDate);
+                  if (end <= start) {
+                    toast.error(
+                      `End date must be after start date for ${cartItems[i].name}`
+                    );
+                    return;
+                  }
+                }
+              }
+
+              if (!paymentMethod) {
+                toast.error("Please select a payment method before checkout");
+                return;
+              }
+
+              if (!isLoggedIn) {
+                localStorage.setItem("redirectAfterLogin", "/cart");
+                toast.error("Please login before proceeding to checkout!");
+                navigate("/login");
+                return;
+              }
+
+              alert("Booking Confirmed! ✅");
+              dispatch({ type: "cart/clearCart" });
+            }}
+            className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
+          >
+            Proceed to Checkout
+          </button>
         </div>
       </div>
     </div>
