@@ -2,17 +2,33 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { products } from "../data/cars";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
 
 const CarDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const car = products.find((c) => c.id === parseInt(id));
 
+  // 🧠 Try to find car from main product list first
+  let car = products.find((c) => c.id === parseInt(id));
+
+  // 🧩 If not found, check Redux (cart/wishlist items)
+  const cartItems = useSelector((state) => state.cart.items);
+  const wishlistItems = useSelector((state) => state.wishlist.items);
   if (!car) {
-    return <p className="text-center text-red-500 mt-10">Car not found.</p>;
+    car =
+      cartItems.find((c) => c.id === parseInt(id)) ||
+      wishlistItems.find((c) => c.id === parseInt(id));
+  }
+
+  // 🧾 If still not found, show error
+  if (!car) {
+    return (
+      <p className="text-center text-red-500 mt-10">
+        Car not found or removed from data.
+      </p>
+    );
   }
 
   // Simple fake details generator
@@ -61,8 +77,6 @@ const CarDetails = () => {
         pricePerDay: car.price,
       })
     );
-
-    // Optional: small confirmation
     alert(`${car.name} has been added to your cart.`);
   };
 
@@ -83,13 +97,12 @@ const CarDetails = () => {
         />
 
         <div className="p-6 md:w-1/2">
-          {/* Car Name */}
           <h2 className="text-3xl font-bold text-blue-800 dark:text-blue-300">
             {car.name}
           </h2>
 
           <p className="text-gray-600 dark:text-gray-300 mt-1">
-            Model: {car.model} • {year}
+            Model: {car.model || "N/A"} • {year}
           </p>
 
           <div className="mt-4">
@@ -143,7 +156,7 @@ const CarDetails = () => {
           </div>
 
           <p className="mt-4 text-gray-600 dark:text-gray-300">
-            {`A comfortable ${car.model} ideal for city rides and weekend trips. This ${car.name} offers a smooth driving experience, reliable performance and modern features for a pleasant journey.`}
+            {`A comfortable ${car.model || "car"} ideal for city rides and weekend trips. This ${car.name} offers a smooth driving experience, reliable performance and modern features for a pleasant journey.`}
           </p>
 
           <div className="mt-5">

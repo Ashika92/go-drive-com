@@ -34,28 +34,36 @@ const WishlistPage = () => {
           className="card-box p-4 mb-4 flex justify-between items-center flex-col md:flex-row gap-3"
         >
           <div className="flex items-center gap-4 flex-1">
+            {/* ✅ Added clickable image */}
             <img
+              onClick={() => navigate(`/cars/${item.id}`)}
+ // ✅
               src={item.image || "/car-placeholder.png"}
               alt={item.name}
-              className="w-24 h-20 object-cover rounded-md border border-gray-300"
+              className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition" // ✅
+              title="View Details"
             />
+
             <div>
-              <h3 className="text-lg  text-black font-semibold">{item.name}</h3>
-              <p className="text-gray-800">₹{item.pricePerDay || item.price}/day</p>
+              <h3 className="text-lg text-black font-semibold">{item.name}</h3>
+              <p className="text-gray-800">
+                ₹{item.pricePerDay || item.price}/day
+              </p>
             </div>
           </div>
 
           <div className="flex gap-3">
             <button
-  onClick={() => {
-    dispatch(addToCart(item));
-    dispatch(removeFromWishlist(item.id));
-    toast.success(`${item.name} moved to Cart 🛒`);
-  }}
-  className="bg-green-700 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition"
->
-  Add to Cart
-</button>
+              onClick={() => {
+                dispatch(addToCart(item));
+                dispatch(removeFromWishlist(item.id));
+                toast.success(`${item.name} moved to Cart 🛒`);
+              }}
+              className="bg-green-700 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition"
+            >
+              Add to Cart
+            </button>
+
             <button
               onClick={() => dispatch(removeFromWishlist(item.id))}
               className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"

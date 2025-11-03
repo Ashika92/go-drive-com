@@ -1,60 +1,19 @@
 /* eslint-disable */
-
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { clearOrders } from "../features/orders/ordersSlice";
 
-
 const MyOrdersPage = ({ mode = "user" }) => {
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      name: "Honda City",
-      status: "Order Confirmed",
-      price: 3500,
-      date: "2025-10-30",
-      expectedDate: "2025-11-02",
-      details: "Pickup from Palakkad, Drop at Coimbatore",
-      progress: "Order Confirmed",
-      deliveredDate: null,
-    },
-    {
-      id: 2,
-      name: "Maruti Swift",
-      status: "Delivered",
-      price: 2800,
-      date: "2025-10-25",
-      expectedDate: "2025-10-27",
-      details: "Pickup from Palakkad, Drop at Kochi",
-      progress: "Delivered",
-      deliveredDate: "2025-10-27",
-    },
-  ]);
+  const dispatch = useDispatch();
+  const orders = useSelector((state) => state.orders.items); // ✅ Fetch from Redux
 
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [cancelReason, setCancelReason] = useState("");
-  const [cancelOrderId, setCancelOrderId] = useState(null);
   const [trackOrder, setTrackOrder] = useState(null);
   const [toast, setToast] = useState(null);
-  const [commandText, setCommandText] = useState("");
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 2500);
-  };
-
-  const handleCancelSubmit = () => {
-    if (!cancelReason.trim()) return alert("Please enter a reason!");
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === cancelOrderId
-          ? { ...o, status: "Cancelled ❌", progress: "Cancelled" }
-          : o
-      )
-    );
-    showToast("Order cancelled successfully.", "error");
-    setCancelOrderId(null);
-    setCancelReason("");
   };
 
   const progressSteps = [
@@ -63,37 +22,8 @@ const MyOrdersPage = ({ mode = "user" }) => {
     "Ready for Delivery",
     "Delivered",
   ];
-
   const getProgressIndex = (progress) =>
     progressSteps.indexOf(progress) + 1 || 0;
-
-  const advanceTracking = (id) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id === id && o.progress !== "Delivered") {
-          const nextStep =
-            progressSteps[getProgressIndex(o.progress)] || "Delivered";
-          const isDelivered = nextStep === "Delivered";
-          return {
-            ...o,
-            progress: nextStep,
-            status: nextStep,
-            deliveredDate: isDelivered
-              ? new Date().toISOString().slice(0, 10)
-              : o.deliveredDate,
-          };
-        }
-        return o;
-      })
-    );
-    showToast("Booking status updated ✅");
-  };
-
-  const handleCommandSubmit = (orderId) => {
-    if (!commandText.trim()) return;
-    showToast("Message sent successfully ✅");
-    setCommandText("");
-  };
 
   return (
     <div className="min-h-screen pt-24 bg-transparent text-gray-800 dark:text-gray-200 transition-all duration-500 relative">
@@ -113,26 +43,58 @@ const MyOrdersPage = ({ mode = "user" }) => {
               bg-white dark:bg-gray-900 transition-all duration-300"
             >
               <div className="w-full md:w-2/3">
-                <h3 className="text-lg text-black font-semibold">
-                  {order.name}
+                <h3 className="text-lg text-black dark:text-white font-semibold">
+                  Booking ID: {order.id}
                 </h3>
-                <p className="text-gray-800">Booked On: {order.date}</p>
-                <p className="text-gray-800">
+                <p className="text-gray-800 dark:text-gray-300">
+                  Booked On: {order.date}
+                </p>
+                <p className="text-gray-800 dark:text-gray-300">
                   Expected Delivery: {order.expectedDate}
                 </p>
-                {order.deliveredDate && (
-                  <p className="text-green-800 font-medium">
-                    Delivered On: {order.deliveredDate}
-                  </p>
-                )}
-                <p className="text-gray-800">Total: ₹{order.price}</p>
-                <p className="font-semibold text-black">
-                  Status: {order.status}
+                <p className="text-gray-800 dark:text-gray-300">
+                  Status:{" "}
+                  <span className="font-semibold text-black dark:text-white">
+                    {order.status || "Ordered"}
+                  </span>
                 </p>
+                <p className="text-gray-800 dark:text-gray-300">
+                  Total Amount: ₹{order.price}
+                </p>
+
+                {/* ✅ List Cars in This Order */}
+                {order.cars && order.cars.length > 0 && (
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {order.cars.map((car) => (
+                      <div
+                        key={car.id}
+                        className="flex items-center gap-3 border p-2 rounded-md bg-gray-50 dark:bg-gray-800"
+                      >
+                        <img
+                          src={car.image || "/car-placeholder.png"}
+                          alt={car.name}
+                          className="w-20 h-16 object-cover rounded"
+                        />
+                        <div>
+                          <h4 className="font-semibold text-black dark:text-white">
+                            {car.name}
+                          </h4>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
+                            Type: {car.rentalType}
+                          </p>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">
+                            {car.rentalType === "day"
+                              ? `${car.startDate} → ${car.endDate}`
+                              : `${car.hours} hour(s)`}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
-                {/* USER MODE BUTTONS */}
                 {mode === "user" && (
                   <>
                     <button
@@ -142,61 +104,13 @@ const MyOrdersPage = ({ mode = "user" }) => {
                       View Details
                     </button>
 
-                    {order.status === "Order Confirmed" && (
-                      <button
-                        onClick={() => setCancelOrderId(order.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Cancel Order
-                      </button>
-                    )}
-
-                    {order.status !== "Cancelled ❌" && (
-                      <button
-                        onClick={() => setTrackOrder(order)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        Track Order
-                      </button>
-                    )}
-                  </>
-                )}
-
-                {/* 🌟 AGENCY MODE BUTTONS (gradient-styled) */}
-                {mode === "agency" && (
-                  <div className="flex flex-wrap gap-3 mt-3">
-                    {/* View Details button (gradient style) */}
-                    <button
-                      onClick={() => setSelectedOrder(order)}
-                      className="bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
-                    >
-                      View Details
-                    </button>
-
-                    {/* Order Request button */}
-                    <button
-                      onClick={() => advanceTracking(order.id)}
-                      className="bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
-                    >
-                      Order Request
-                    </button>
-
-                    {/* Cancel Request button */}
-                    <button
-                      onClick={() => handleCancelSubmit(order.id)}
-                      className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
-                    >
-                      Cancel Request
-                    </button>
-
-                    {/* Track Request button */}
                     <button
                       onClick={() => setTrackOrder(order)}
-                      className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
                     >
-                      Track Request
+                      Track Order
                     </button>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -207,7 +121,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
           <div className="flex justify-center mt-8">
             <button
               onClick={() => {
-                setOrders([]);
+                dispatch(clearOrders());
                 showToast("Order history cleared 🧹");
               }}
               className="px-20 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 dark:from-purple-700 dark:to-cyan-600 text-gray-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
@@ -218,7 +132,102 @@ const MyOrdersPage = ({ mode = "user" }) => {
         )}
       </div>
 
-      {/* (Modals & Toast stay unchanged here) */}
+      {/* ✅ View Details Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full shadow-lg">
+            <h3 className="text-2xl font-semibold mb-4 text-center text-black dark:text-white">
+              Booking Details
+            </h3>
+            <p>📦 Booking ID: {selectedOrder.id}</p>
+            <p>📅 Booked On: {selectedOrder.date}</p>
+            <p>🚚 Expected Delivery: {selectedOrder.expectedDate}</p>
+            <p>💰 Total Amount: ₹{selectedOrder.price}</p>
+            <p>📍 Status: {selectedOrder.status}</p>
+
+            <h4 className="font-semibold mt-4 mb-2">Car Details:</h4>
+            {selectedOrder.cars?.map((car) => (
+              <div key={car.id} className="border p-2 rounded mb-2">
+                <p>🚗 {car.name}</p>
+                <p>Type: {car.rentalType}</p>
+                <p>
+                  {car.rentalType === "day"
+                    ? `${car.startDate} → ${car.endDate}`
+                    : `${car.hours} hour(s)`}
+                </p>
+              </div>
+            ))}
+
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Track Order Modal */}
+      {trackOrder && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
+            <h3 className="text-2xl font-semibold mb-4 text-center text-black dark:text-white">
+              Track Order
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
+              Booking ID: {trackOrder.id}
+            </p>
+
+            {/* Progress bar */}
+            <div className="flex justify-between text-sm mb-2">
+              {progressSteps.map((step, index) => (
+                <div
+                  key={index}
+                  className={`flex-1 text-center ${
+                    index + 1 <= getProgressIndex(trackOrder.status)
+                      ? "text-green-500 font-semibold"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {step}
+                </div>
+              ))}
+            </div>
+
+            <div className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
+              <div
+                className="h-2 bg-green-500 rounded-full transition-all duration-500"
+                style={{
+                  width: `${
+                    (getProgressIndex(trackOrder.status) /
+                      progressSteps.length) *
+                    100
+                  }%`,
+                }}
+              ></div>
+            </div>
+
+            <button
+              onClick={() => setTrackOrder(null)}
+              className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Toast */}
+      {toast && (
+        <div
+          className={`fixed bottom-5 right-5 px-4 py-2 rounded text-white ${
+            toast.type === "error" ? "bg-red-600" : "bg-green-600"
+          }`}
+        >
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 };

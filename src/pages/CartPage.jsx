@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // ✅ Added useEffect
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, updateQuantity } from "../features/cart/cartSlice";
 import { useNavigate } from "react-router-dom";
 import { addToWishlist } from "../features/wishlist/wishlistSlice";
+import { addOrder } from "../features/orders/ordersSlice";
 import toast from "react-hot-toast";
 
 const CheckoutPage = () => {
@@ -21,8 +22,19 @@ const CheckoutPage = () => {
 
   const [paymentMethod, setPaymentMethod] = useState("upi");
 
+  // ✅ Step 2: Restore checkout info after login
+  useEffect(() => {
+    const savedCheckout = localStorage.getItem("pendingCheckout");
+    if (savedCheckout) {
+      const parsed = JSON.parse(savedCheckout);
+      if (parsed.itemDetails) setItemDetails(parsed.itemDetails);
+      if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
+      localStorage.removeItem("pendingCheckout"); // clear once restored
+    }
+  }, []);
+
   const getDaysBetween = (start, end) => {
-    if (!start || !end) return 0; // handle empty inputs
+    if (!start || !end) return 0;
     const s = new Date(start);
     const e = new Date(end);
     const diff = e - s;
@@ -88,11 +100,16 @@ const CheckoutPage = () => {
             >
               {/* LEFT: Car Info */}
               <div className="flex items-center gap-3 flex-1">
+                {/* ✅ Added clickable image redirect */}
                 <img
+                  onClick={() => navigate(`/cars/${item.id}`)}
+ // ✅
                   src={item.image || "/car-placeholder.png"}
                   alt={item.name}
-                  className="w-24 h-20 object-cover rounded-md border border-gray-300"
+                  className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition" // ✅
+                  title="View Details" // ✅ Tooltip
                 />
+
                 <div className="text-sm">
                   <h3 className="text-lg text-black dark:text-white font-semibold">
                     {item.name}
@@ -233,7 +250,6 @@ const CheckoutPage = () => {
                 </p>
 
                 <div className="flex gap-2 mt-1">
-                  {/* Remove Button */}
                   <button
                     onClick={() => dispatch(removeFromCart(item.id))}
                     className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs transition"
@@ -241,7 +257,6 @@ const CheckoutPage = () => {
                     Remove
                   </button>
 
-                  {/* Wishlist Button */}
                   <button
                     onClick={() => {
                       dispatch(addToWishlist(item));
@@ -292,7 +307,6 @@ const CheckoutPage = () => {
             onClick={() => {
               const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
-              // ✅ Validation before checkout
               for (let i = 0; i < cartItems.length; i++) {
                 const { rentalType, startDate, endDate, hours } =
                   itemDetails[i];
@@ -323,7 +337,6 @@ const CheckoutPage = () => {
                     return;
                   }
 
-                  // ✅ New: Validate end date > start date (cross-month compatible)
                   const start = new Date(startDate);
                   const end = new Date(endDate);
                   if (end <= start) {
@@ -340,15 +353,45 @@ const CheckoutPage = () => {
                 return;
               }
 
+              // ✅ Step 1: Save info before login redirect
               if (!isLoggedIn) {
+                const checkoutData = {
+                  itemDetails,
+                  paymentMethod,
+                };
+                localStorage.setItem(
+                  "pendingCheckout",
+                  JSON.stringify(checkoutData)
+                );
                 localStorage.setItem("redirectAfterLogin", "/cart");
+
                 toast.error("Please login before proceeding to checkout!");
                 navigate("/login");
                 return;
               }
 
-              alert("Booking Confirmed! ✅");
-              dispatch({ type: "cart/clearCart" });
+               // ✅ ADD THIS AT TOP
+
+// ...inside your Proceed to Checkout onClick handler
+alert("Booking Confirmed! ✅");
+
+// ✅ Save confirmed order
+dispatch(
+  addOrder({
+    items: cartItems.map((item, index) => ({
+      ...item,
+      ...itemDetails[index],
+      total: calculateItemTotal(item, index),
+    })),
+    totalAmount: grandTotal,
+  })
+);
+
+// ✅ Clean up
+localStorage.removeItem("pendingCheckout");
+dispatch({ type: "cart/clearCart" });
+navigate("/my-orders"); // optional redirect if you want
+
             }}
             className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"
           >
