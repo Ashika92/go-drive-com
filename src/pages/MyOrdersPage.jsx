@@ -1,14 +1,24 @@
 /* eslint-disable */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { clearOrders } from "../features/orders/ordersSlice";
 
 const MyOrdersPage = ({ mode = "user" }) => {
   const dispatch = useDispatch();
-  const orders = useSelector((state) => state.orders.items); // ✅ Fetch from Redux
+  const ordersFromRedux = useSelector((state) => state.orders.items);
+
+  // ✅ Local copy for editing (like cancellation), synced with Redux
+  const [orders, setOrders] = useState(ordersFromRedux);
+
+  useEffect(() => {
+    // ✅ Whenever Redux orders change, update local copy instantly
+    setOrders(ordersFromRedux);
+  }, [ordersFromRedux]);
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [trackOrder, setTrackOrder] = useState(null);
+  const [cancelOrder, setCancelOrder] = useState(null);
+  const [cancelReason, setCancelReason] = useState("");
   const [toast, setToast] = useState(null);
 
   const showToast = (message, type = "success") => {
@@ -24,6 +34,32 @@ const MyOrdersPage = ({ mode = "user" }) => {
   ];
   const getProgressIndex = (progress) =>
     progressSteps.indexOf(progress) + 1 || 0;
+
+  // ✅ Handle order cancellation (local UI only)
+  const handleCancelSubmit = () => {
+    if (!cancelReason.trim()) {
+      showToast("Please provide a reason", "error");
+      return;
+    }
+
+    const updatedOrders = orders.map((o) =>
+      o.id === cancelOrder.id
+        ? { ...o, status: "Cancellation Requested", cancelReason }
+        : o
+    );
+
+    setOrders(updatedOrders);
+    showToast("Order cancellation requested ❌", "success");
+    setCancelOrder(null);
+    setCancelReason("");
+  };
+
+  // ✅ Handle clear history — instant clear on UI and Redux
+  const handleClearHistory = () => {
+    dispatch(clearOrders());
+    setOrders([]); // instantly reflect on screen
+    showToast("Order history cleared 🧹");
+  };
 
   return (
     <div className="min-h-screen pt-24 bg-transparent text-gray-800 dark:text-gray-200 transition-all duration-500 relative">
@@ -52,17 +88,30 @@ const MyOrdersPage = ({ mode = "user" }) => {
                 <p className="text-gray-800 dark:text-gray-300">
                   Expected Delivery: {order.expectedDate}
                 </p>
+
                 <p className="text-gray-800 dark:text-gray-300">
                   Status:{" "}
-                  <span className="font-semibold text-black dark:text-white">
+                  <span
+                    className={`font-semibold ${
+                      order.status === "Cancellation Requested"
+                        ? "text-yellow-500"
+                        : "text-black dark:text-white"
+                    }`}
+                  >
                     {order.status || "Ordered"}
                   </span>
                 </p>
+
+                {order.cancelReason && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                    Reason: {order.cancelReason}
+                  </p>
+                )}
+
                 <p className="text-gray-800 dark:text-gray-300">
                   Total Amount: ₹{order.price}
                 </p>
 
-                {/* ✅ List Cars in This Order */}
                 {order.cars && order.cars.length > 0 && (
                   <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {order.cars.map((car) => (
@@ -110,6 +159,15 @@ const MyOrdersPage = ({ mode = "user" }) => {
                     >
                       Track Order
                     </button>
+
+                    {order.status !== "Cancellation Requested" && (
+                      <button
+                        onClick={() => setCancelOrder(order)}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+                      >
+                        Cancel Order
+                      </button>
+                    )}
                   </>
                 )}
               </div>
@@ -120,10 +178,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
         {orders.length > 0 && mode === "user" && (
           <div className="flex justify-center mt-8">
             <button
-              onClick={() => {
-                dispatch(clearOrders());
-                showToast("Order history cleared 🧹");
-              }}
+              onClick={handleClearHistory}
               className="px-20 py-2 bg-gradient-to-r from-purple-600 to-cyan-500 dark:from-purple-700 dark:to-cyan-600 text-gray-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg transition-transform transform hover:scale-105"
             >
               Clear History
@@ -139,18 +194,37 @@ const MyOrdersPage = ({ mode = "user" }) => {
             <h3 className="text-2xl font-semibold mb-4 text-center text-black dark:text-white">
               Booking Details
             </h3>
-            <p>📦 Booking ID: {selectedOrder.id}</p>
-            <p>📅 Booked On: {selectedOrder.date}</p>
-            <p>🚚 Expected Delivery: {selectedOrder.expectedDate}</p>
-            <p>💰 Total Amount: ₹{selectedOrder.price}</p>
-            <p>📍 Status: {selectedOrder.status}</p>
+            <p className="text-black">📦 Booking ID: {selectedOrder.id}</p>
+            <p className="text-black">📅 Booked On: {selectedOrder.date}</p>
+            <p className="text-black">
+              🚚 Expected Delivery: {selectedOrder.expectedDate}
+            </p>
+            <p className="text-black">💰 Total Amount: ₹{selectedOrder.price}</p>
+            <p className="text-black">
+              📍 Status:{" "}
+              <span
+                className={`${
+                  selectedOrder.status === "Cancellation Requested"
+                    ? "text-yellow-500"
+                    : "text-black"
+                }`}
+              >
+                {selectedOrder.status}
+              </span>
+            </p>
 
-            <h4 className="font-semibold mt-4 mb-2">Car Details:</h4>
+            {selectedOrder.cancelReason && (
+              <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 italic">
+                Reason: {selectedOrder.cancelReason}
+              </p>
+            )}
+
+            <h4 className="font-semibold text-black mt-4 mb-2">Car Details:</h4>
             {selectedOrder.cars?.map((car) => (
-              <div key={car.id} className="border p-2 rounded mb-2">
-                <p>🚗 {car.name}</p>
-                <p>Type: {car.rentalType}</p>
-                <p>
+              <div key={car.id} className="border p-2 text-black rounded mb-2">
+                <p className="text-black">🚗 {car.name}</p>
+                <p className="text-black">Type: {car.rentalType}</p>
+                <p className="text-black">
                   {car.rentalType === "day"
                     ? `${car.startDate} → ${car.endDate}`
                     : `${car.hours} hour(s)`}
@@ -168,52 +242,41 @@ const MyOrdersPage = ({ mode = "user" }) => {
         </div>
       )}
 
-      {/* ✅ Track Order Modal */}
-      {trackOrder && (
+      {/* ✅ Cancel Order Modal */}
+      {cancelOrder && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
           <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
             <h3 className="text-2xl font-semibold mb-4 text-center text-black dark:text-white">
-              Track Order
+              Cancel Order
             </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Booking ID: {trackOrder.id}
+            <p className="text-gray-700 dark:text-gray-300 mb-3">
+              Please provide a reason for canceling order #{cancelOrder.id}:
             </p>
+            <textarea
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              placeholder="Enter your reason..."
+              className="w-full p-2 rounded border dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+              rows="3"
+            ></textarea>
 
-            {/* Progress bar */}
-            <div className="flex justify-between text-sm mb-2">
-              {progressSteps.map((step, index) => (
-                <div
-                  key={index}
-                  className={`flex-1 text-center ${
-                    index + 1 <= getProgressIndex(trackOrder.status)
-                      ? "text-green-500 font-semibold"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {step}
-                </div>
-              ))}
-            </div>
-
-            <div className="w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full">
-              <div
-                className="h-2 bg-green-500 rounded-full transition-all duration-500"
-                style={{
-                  width: `${
-                    (getProgressIndex(trackOrder.status) /
-                      progressSteps.length) *
-                    100
-                  }%`,
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setCancelOrder(null);
+                  setCancelReason("");
                 }}
-              ></div>
+                className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+              >
+                Close
+              </button>
+              <button
+                onClick={handleCancelSubmit}
+                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+              >
+                Submit
+              </button>
             </div>
-
-            <button
-              onClick={() => setTrackOrder(null)}
-              className="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}
