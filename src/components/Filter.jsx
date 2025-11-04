@@ -52,7 +52,7 @@ const Filter = ({ filters, setFilters }) => {
       >
         <option value="">All Models</option>
         <option value="Maruti">Maruti</option>
-        <option value="Hundai">Hundai</option>
+        <option value="Hyundai">Hyundai</option>
         <option value="Toyota">Toyota</option>
         <option value="Mahindra">Mahindra</option>
       </select>

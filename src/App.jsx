@@ -13,6 +13,7 @@ import AgencyDashboard from "./pages/AgencyDashboard";
 import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
+import Terms from "./pages/Terms";
 
 import "./index.css";
 
@@ -107,11 +108,12 @@ function App() {
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/cars/:id" element={<CarDetails />} />
+           <Route path="/terms" element={<Terms theme={theme} />} />
         </Routes>
       </div>
 
-      {/* ⚓ Footer */}
-      {!hideLayout && <Footer />}
+      {/* ⚓ Footer (with theme support) */}
+      {!hideLayout && <Footer theme={theme} />}
     </div>
   );
 }

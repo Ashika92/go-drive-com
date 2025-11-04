@@ -4,6 +4,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { products } from "../data/cars";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
+import { removeFromWishlist } from "../features/wishlist/wishlistSlice";
+import toast from "react-hot-toast";
+
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -65,20 +68,29 @@ const CarDetails = () => {
   else pricePerHour = 199;
 
   // 🛒 Add to Cart handler
-  const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: car.id,
-        name: car.name,
-        price: car.price,
-        image: car.image,
-        fuel: fuel,
-        pricePerHour: pricePerHour,
-        pricePerDay: car.price,
-      })
-    );
-    alert(`${car.name} has been added to your cart.`);
-  };
+  // 🛒 Add to Cart handler
+const handleAddToCart = () => {
+  dispatch(
+    addToCart({
+      id: car.id,
+      name: car.name,
+      price: car.price,
+      image: car.image,
+      fuel: fuel,
+      pricePerHour: pricePerHour,
+      pricePerDay: car.price,
+    })
+  );
+
+  // ✅ If this car exists in wishlist, remove it automatically
+  const isInWishlist = wishlistItems.some((item) => item.id === car.id);
+  if (isInWishlist) {
+    dispatch(removeFromWishlist(car.id));
+  }
+
+  toast.success(`${car.name} added to Cart 🛒`);
+};
+
 
   return (
     <div className="max-w-4xl mx-auto p-6">

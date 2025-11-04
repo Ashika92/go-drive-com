@@ -36,3 +36,10 @@
     @apply bg-white text-black dark:bg-white dark:text-black rounded-lg shadow transition-colors duration-500;
   }
 }
+html.dark body, html.dark footer {
+  color: white !important;
+}
+html.dark footer, 
+html.dark footer * {
+  color: #f5f5f5 !important;
+}

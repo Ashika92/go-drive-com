@@ -1,7 +1,8 @@
+// src/features/bookings/bookingsSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  bookings: [
+  bookings: JSON.parse(localStorage.getItem("bookings")) || [
     {
       id: "BK20251104-001",
       carName: "Honda City",
@@ -35,17 +36,30 @@ const bookingsSlice = createSlice({
   reducers: {
     addBooking: (state, action) => {
       state.bookings.push(action.payload);
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist
     },
     updateBookingStatus: (state, action) => {
       const { id, newStatus } = action.payload;
       const booking = state.bookings.find((b) => b.id === id);
       if (booking) booking.status = newStatus;
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist update
     },
     deleteBooking: (state, action) => {
       state.bookings = state.bookings.filter((b) => b.id !== action.payload);
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist delete
+    },
+    clearBookings: (state) => {
+      state.bookings = [];
+      localStorage.removeItem("bookings"); // ✅ Clear only bookings
     },
   },
 });
 
-export const { addBooking, updateBookingStatus, deleteBooking } = bookingsSlice.actions;
+export const {
+  addBooking,
+  updateBookingStatus,
+  deleteBooking,
+  clearBookings,
+} = bookingsSlice.actions;
+
 export default bookingsSlice.reducer;

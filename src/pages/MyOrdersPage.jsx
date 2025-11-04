@@ -168,26 +168,28 @@ const MyOrdersPage = ({ mode = "user" }) => {
               </div>
 
               <div className="flex flex-col gap-2">
-                {mode === "user" && (
-                  <>
-                    <button
-                      onClick={() => setTrackOrder(order)}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                    >
-                      Track Order
-                    </button>
+                {mode === "user" && order.status !== "Delivered" && (
+  <>
+    {order.status !== "Cancellation Requested" &&
+      order.status !== "Cancelled" && (
+        <>
+          <button
+            onClick={() => setTrackOrder(order)}
+            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+          >
+            Track Order
+          </button>
+          <button
+            onClick={() => setCancelOrder(order)}
+            className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
+          >
+            Cancel Order
+          </button>
+        </>
+      )}
+  </>
+)}
 
-                    {order.status !== "Cancellation Requested" &&
-                      order.status !== "Cancelled" && (
-                        <button
-                          onClick={() => setCancelOrder(order)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm"
-                        >
-                          Cancel Order
-                        </button>
-                      )}
-                  </>
-                )}
               </div>
             </div>
           ))
@@ -265,13 +267,13 @@ const MyOrdersPage = ({ mode = "user" }) => {
 
       {/* Order Info */}
       <div className="text-sm text-gray-800 dark:text-gray-200 space-y-1">
-        <p>
+        <p className="text-black">
           <strong>Booking ID:</strong> #{trackOrder.id}
         </p>
-        <p>
+        <p className="text-black">
           <strong>Booked On:</strong> {trackOrder.date}
         </p>
-        <p>
+        <p className="text-black">
           <strong>Expected Delivery:</strong> {trackOrder.expectedDate}
         </p>
         {trackOrder.deliveredDate && (
@@ -284,7 +286,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
             <strong>Cancelled On:</strong> {trackOrder.cancelledDate}
           </p>
         )}
-        <p>
+        <p className="text-black">
           <strong>Status:</strong>{" "}
           <span
             className={`${

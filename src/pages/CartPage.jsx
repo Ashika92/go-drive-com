@@ -38,10 +38,11 @@ const CheckoutPage = () => {
     const s = new Date(start);
     const e = new Date(end);
     const diff = e - s;
-    if (isNaN(diff) || diff <= 0) return 0;
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
-  };
+    if (isNaN(diff)) return 0;
+const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
 
+  };
   const handleItemChange = (index, field, value) => {
     const updated = [...itemDetails];
     updated[index][field] = value;
@@ -339,12 +340,13 @@ const CheckoutPage = () => {
 
                   const start = new Date(startDate);
                   const end = new Date(endDate);
-                  if (end <= start) {
-                    toast.error(
-                      `End date must be after start date for ${cartItems[i].name}`
-                    );
-                    return;
-                  }
+                  if (end < start) {
+  toast.error(
+    `End date cannot be before start date for ${cartItems[i].name}`
+  );
+  return;
+}
+
                 }
               }
 

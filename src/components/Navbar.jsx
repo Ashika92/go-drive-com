@@ -7,10 +7,9 @@ function Navbar({ isLoggedIn, setIsLoggedIn, theme, toggleTheme, userRole = "cus
   const [menuOpen, setMenuOpen] = useState(false);
   const totalQuantity = useSelector((state) => state.cart.totalQuantity);
 
-  // ✅ Updated logout logic (fixed)
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setUserRole && setUserRole("customer"); // reset role safely
+    setUserRole && setUserRole("customer");
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userRole");
     navigate("/");
@@ -106,7 +105,6 @@ function NavbarLinks({
 
   return (
     <>
-      {/* Always visible links */}
       <Link to="/" className={commonLinkClass} onClick={closeMenu}>
         Home
       </Link>
@@ -114,27 +112,28 @@ function NavbarLinks({
         About Us
       </Link>
 
-      {/* Agency or Customer or Default */}
       {isAgency ? (
-        <>
-          <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
-            Agency Dashboard
-          </Link>
-        </>
+        <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
+          Agency Dashboard
+        </Link>
       ) : (
-        <>
-          <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
-            Cars
-          </Link>
-        </>
+        <Link to="/cars" className={commonLinkClass} onClick={closeMenu}>
+          Cars
+        </Link>
       )}
 
-      {/* Contact Us – always visible */}
       <Link to="/contact" className={commonLinkClass} onClick={closeMenu}>
         Contact Us
       </Link>
 
-      {/* 🛒 Cart – visible for default (logged-out) and customers */}
+      {/* ❤️ Wishlist — now visible for everyone */}
+      {!isAgency && (
+  <Link to="/wishlist" className={commonLinkClass} onClick={closeMenu}>
+    Wishlist
+  </Link>
+)}
+
+      {/* 🛒 Cart */}
       {(!isLoggedIn || isCustomer) && (
         <div
           className="relative cursor-pointer md:ml-2 mt-2 md:mt-0"
@@ -154,19 +153,13 @@ function NavbarLinks({
         </div>
       )}
 
-      {/* Customer-only options (after contact + cart) */}
+      {/* Customer-only My Orders */}
       {isLoggedIn && isCustomer && (
-        <>
-          <Link to="/wishlist" className={commonLinkClass} onClick={closeMenu}>
-            Wishlist
-          </Link>
-          <Link to="/my-orders" className={commonLinkClass} onClick={closeMenu}>
-            My Orders
-          </Link>
-        </>
+        <Link to="/my-orders" className={commonLinkClass} onClick={closeMenu}>
+          My Orders
+        </Link>
       )}
 
-      {/* Login / Logout */}
       {isLoggedIn ? (
         <button
           onClick={() => {
