@@ -5,20 +5,31 @@ import Filter from "./Filter";
 import { products } from "../data/cars"; // shared data
 
 const CarList = ({ userRole = "customer" }) => {
+  const [cars, setCars] = useState(products);
   const [filters, setFilters] = useState({
     name: "",
     model: "",
     priceRange: null,
   });
 
-  const filteredProducts = products.filter((car) => {
+  const handleRemoveCar = (id) => {
+    setCars((prev) => prev.filter((car) => car.id !== id));
+  };
+
+  const handleEditCar = (updatedCar) => {
+    setCars((prev) =>
+      prev.map((car) => (car.id === updatedCar.id ? updatedCar : car))
+    );
+  };
+
+  const filteredCars = cars.filter((car) => {
     const nameMatch = car.name.toLowerCase().includes(filters.name.toLowerCase());
     const modelMatch = filters.model ? car.model === filters.model : true;
     const priceMatch =
       filters.priceRange && filters.priceRange.min !== undefined
-        ? car.price >= filters.priceRange.min && car.price <= filters.priceRange.max
+        ? car.price >= filters.priceRange.min &&
+          car.price <= filters.priceRange.max
         : true;
-
     return nameMatch && modelMatch && priceMatch;
   });
 
@@ -31,12 +42,18 @@ const CarList = ({ userRole = "customer" }) => {
       <Filter filters={filters} setFilters={setFilters} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-        {filteredProducts.map((car) => (
-          <CarItem key={car.id} car={car} userRole={userRole} />
+        {filteredCars.map((car) => (
+          <CarItem
+            key={car.id}
+            car={car}
+            userRole={userRole}
+            onRemove={handleRemoveCar}
+            onEdit={handleEditCar}
+          />
         ))}
       </div>
 
-      {filteredProducts.length === 0 && (
+      {filteredCars.length === 0 && (
         <p className="text-center text-gray-500 dark:text-gray-400 mt-6">
           No cars match your filters.
         </p>
