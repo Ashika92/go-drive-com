@@ -30,7 +30,7 @@
     @apply text-white;
   }
 }
-/* Prevent white boxes from turning dark in dark mode */
+
 @layer components {
   .card-box {
     @apply bg-white text-black dark:bg-white dark:text-black rounded-lg shadow transition-colors duration-500;

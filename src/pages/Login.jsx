@@ -17,7 +17,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
 
   const navigate = useNavigate();
 
-  // 🔄 Clear fields when switching forms or roles
+  // Clear fields when switching forms or roles
   useEffect(() => {
     setFormData({
       name: "",
@@ -34,14 +34,14 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✨ Helper validation functions
+  // Helper validation functions
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPhone = (phone) => /^[0-9]{10}$/.test(phone);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // ✅ Sign Up Validation
+    //Sign Up Validation
     if (isSignUp) {
       if (userRole === "customer") {
         if (!formData.name || !formData.email || !formData.phone || !formData.password) {
@@ -82,7 +82,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
       }
     }
 
-    // ✅ Login Validation
+    //Login Validation
     else {
       if (userRole === "customer") {
         if (!formData.email || !formData.password) {
@@ -116,13 +116,13 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
       }
     }
 
-    // ✅ Save login info
+    // Save login info
     setIsLoggedIn(true);
     setUserRole(userRole);
     localStorage.setItem("userRole", userRole);
     localStorage.setItem("isLoggedIn", "true");
 
-    // ✅ Redirect after login
+    //Redirect after login
     const redirectPath = localStorage.getItem("redirectAfterLogin");
     if (redirectPath) {
       localStorage.removeItem("redirectAfterLogin");
@@ -140,7 +140,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
           : "bg-gradient-to-r from-gray-800 to-gray-900 text-white"
       }`}
     >
-      {/* 🔁 Toggle Role */}
+      {/*  Toggle Role */}
       <button
         onClick={() => setRole((prev) => (prev === "customer" ? "agency" : "customer"))}
         className={`absolute top-6 right-6 px-4 py-2 rounded-md font-semibold shadow-md transition ${
@@ -152,7 +152,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
         {userRole === "customer" ? "Agency Login →" : "← Customer Login"}
       </button>
 
-      {/* 🔒 Login / Signup Box */}
+      {/*  Login / Signup Box */}
       <form
         onSubmit={handleSubmit}
         autoComplete="off"
@@ -286,7 +286,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
           )}
         </div>
 
-        {/* 🔘 Submit */}
+        {/* Submit */}
         <button
           type="submit"
           className="w-full mt-6 py-2 bg-gradient-to-r from-purple-400 to-cyan-300 text-black font-semibold rounded-lg hover:scale-105 transition"
@@ -294,7 +294,7 @@ export default function Login({ setIsLoggedIn, setUserRole, theme }) {
           {isSignUp ? "Sign Up" : "Login"}
         </button>
 
-        {/* 🔁 Switch Login/Signup */}
+        {/*  Switch Login/Signup */}
         <p className="text-center mt-4">
           {isSignUp ? "Already have an account?" : "Don’t have an account?"}{" "}
           <span

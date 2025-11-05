@@ -92,7 +92,6 @@ function App() {
 
           <Route path="/contact" element={<Contact />} />
 
-          {/* 🔑 Login route */}
           <Route
             path="/login"
             element={
@@ -108,11 +107,10 @@ function App() {
           <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
           <Route path="/cars/:id" element={<CarDetails />} />
-           <Route path="/terms" element={<Terms theme={theme} />} />
+          <Route path="/terms" element={<Terms theme={theme} />} />
         </Routes>
       </div>
 
-      {/* ⚓ Footer (with theme support) */}
       {!hideLayout && <Footer theme={theme} />}
     </div>
   );

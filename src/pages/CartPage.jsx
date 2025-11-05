@@ -22,14 +22,14 @@ const CheckoutPage = () => {
 
   const [paymentMethod, setPaymentMethod] = useState("upi");
 
-  // ✅ Step 2: Restore checkout info after login
+  // Restore checkout info after login
   useEffect(() => {
     const savedCheckout = localStorage.getItem("pendingCheckout");
     if (savedCheckout) {
       const parsed = JSON.parse(savedCheckout);
       if (parsed.itemDetails) setItemDetails(parsed.itemDetails);
       if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
-      localStorage.removeItem("pendingCheckout"); // clear once restored
+      localStorage.removeItem("pendingCheckout");
     }
   }, []);
 
@@ -39,8 +39,8 @@ const CheckoutPage = () => {
     const e = new Date(end);
     const diff = e - s;
     if (isNaN(diff)) return 0;
-const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days > 0 ? days : 1;
 
   };
   const handleItemChange = (index, field, value) => {
@@ -99,16 +99,16 @@ return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
               key={item.id}
               className="card-box p-4 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3"
             >
-              {/* LEFT: Car Info */}
+
               <div className="flex items-center gap-3 flex-1">
-                {/* ✅ Added clickable image redirect */}
+                {/* Added clickable image redirect */}
                 <img
                   onClick={() => navigate(`/cars/${item.id}`)}
- // ✅
+                  // ✅
                   src={item.image || "/car-placeholder.png"}
                   alt={item.name}
-                  className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition" // ✅
-                  title="View Details" // ✅ Tooltip
+                  className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition"
+                  title="View Details"
                 />
 
                 <div className="text-sm">
@@ -292,8 +292,8 @@ return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
                 {method === "upi"
                   ? "UPI / Google Pay"
                   : method === "card"
-                  ? "Credit / Debit Card"
-                  : "Pay on Delivery"}
+                    ? "Credit / Debit Card"
+                    : "Pay on Delivery"}
               </label>
             ))}
           </div>
@@ -341,11 +341,11 @@ return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
                   const start = new Date(startDate);
                   const end = new Date(endDate);
                   if (end < start) {
-  toast.error(
-    `End date cannot be before start date for ${cartItems[i].name}`
-  );
-  return;
-}
+                    toast.error(
+                      `End date cannot be before start date for ${cartItems[i].name}`
+                    );
+                    return;
+                  }
 
                 }
               }
@@ -355,7 +355,7 @@ return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
                 return;
               }
 
-              // ✅ Step 1: Save info before login redirect
+
               if (!isLoggedIn) {
                 const checkoutData = {
                   itemDetails,
@@ -372,27 +372,25 @@ return days > 0 ? days : 1; // ✅ Ensure at least 1 day even if same date
                 return;
               }
 
-               // ✅ ADD THIS AT TOP
 
-// ...inside your Proceed to Checkout onClick handler
-alert("Booking Confirmed! ✅");
+              alert("Booking Confirmed! ✅");
 
-// ✅ Save confirmed order
-dispatch(
-  addOrder({
-    items: cartItems.map((item, index) => ({
-      ...item,
-      ...itemDetails[index],
-      total: calculateItemTotal(item, index),
-    })),
-    totalAmount: grandTotal,
-  })
-);
 
-// ✅ Clean up
-localStorage.removeItem("pendingCheckout");
-dispatch({ type: "cart/clearCart" });
-navigate("/my-orders"); // optional redirect if you want
+              dispatch(
+                addOrder({
+                  items: cartItems.map((item, index) => ({
+                    ...item,
+                    ...itemDetails[index],
+                    total: calculateItemTotal(item, index),
+                  })),
+                  totalAmount: grandTotal,
+                })
+              );
+
+
+              localStorage.removeItem("pendingCheckout");
+              dispatch({ type: "cart/clearCart" });
+              navigate("/my-orders");
 
             }}
             className="px-5 py-2 bg-green-700 hover:bg-green-600 text-white rounded-lg font-medium transition"

@@ -207,8 +207,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
         )}
       </div>
 
-      {/* 🟢 Track Order Modal */}
-      {/* 🟢 Track Order Modal */}
+      
 {trackOrder && (
   <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
     <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full shadow-lg relative">
@@ -216,7 +215,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
         🚘 Track Order
       </h3>
 
-      {/* Timeline Container */}
+      
       {/* Timeline Container */}
 <div className="relative mb-10 w-full overflow-hidden">
   <div className="flex justify-between items-center relative max-w-[90%] mx-auto">
@@ -314,7 +313,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
 )}
 
 
-      {/* ❌ Cancel Order Modal */}
+      {/* Cancel Order Modal */}
       {cancelOrder && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4">
           <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-md w-full shadow-lg">
@@ -353,7 +352,7 @@ const MyOrdersPage = ({ mode = "user" }) => {
         </div>
       )}
 
-      {/* ✅ Toast Notification */}
+      {/* Toast Notification */}
       {toast && (
         <div
           className={`fixed bottom-5 right-5 px-4 py-2 rounded text-white ${

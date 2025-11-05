@@ -34,13 +34,13 @@ const WishlistPage = () => {
           className="card-box p-4 mb-4 flex justify-between items-center flex-col md:flex-row gap-3"
         >
           <div className="flex items-center gap-4 flex-1">
-            {/* ✅ Added clickable image */}
+            {/*Added clickable image */}
             <img
               onClick={() => navigate(`/cars/${item.id}`)}
- // ✅
+ 
               src={item.image || "/car-placeholder.png"}
               alt={item.name}
-              className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition" // ✅
+              className="w-24 h-20 object-cover rounded-md border border-gray-300 cursor-pointer hover:opacity-80 transition" 
               title="View Details"
             />
 
