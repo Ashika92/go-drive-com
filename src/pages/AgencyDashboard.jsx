@@ -238,16 +238,7 @@ const cars = JSON.parse(localStorage.getItem("agencyCars")) || [];
       {/* 🆕 Clear History Button */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Bookings</h2>
-        <button
-          onClick={handleClearBookings}
-          className={`px-4 py-2 rounded-full text-sm font-semibold transition ${
-            theme === "light"
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-red-600 text-white hover:bg-red-500"
-          }`}
-        >
-          🗑️ Clear History
-        </button>
+        
       </div>
 
       <p className="text-sm mb-6 text-gray-400">
