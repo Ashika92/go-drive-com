@@ -2,32 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  bookings: JSON.parse(localStorage.getItem("bookings")) || [
-    {
-      id: "BK20251104-001",
-      carName: "Honda City",
-      customer: "Arjun Menon",
-      startDate: "2025-11-02",
-      endDate: "2025-11-05",
-      pickup: "Palakkad",
-      dropoff: "Kochi",
-      status: "Ongoing",
-      total: "₹4,500",
-      paymentStatus: "Paid",
-    },
-    {
-      id: "BK20251103-002",
-      carName: "Maruti Swift",
-      customer: "Diya Raj",
-      startDate: "2025-11-01",
-      endDate: "2025-11-02",
-      pickup: "Kozhikode",
-      dropoff: "Palakkad",
-      status: "Completed",
-      total: "₹2,000",
-      paymentStatus: "Paid",
-    },
-  ],
+  bookings: JSON.parse(localStorage.getItem("bookings")) || [], // ✅ Removed dummy data
 };
 
 const bookingsSlice = createSlice({
