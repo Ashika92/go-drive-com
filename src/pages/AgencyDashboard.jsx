@@ -443,7 +443,7 @@ export default function AgencyDashboard({ theme, toggleTheme }) {
           .reduce((sum, o) => sum + (o.totalAmount || o.price || 0), 0);
 
         return (
-          <div className={`p-6 rounded-2xl shadow-md ${theme === "light" ? "bg-white text-gray-900" : "bg-gray-800 text-white"
+          <div className={`p-6 rounded-2xl shadow-md ${theme === "light" ? "bg-black text-gray-900" : "bg-gray-800 text-white"
             }`}>
             <h2 className="text-2xl font-bold mb-6">Analytics Overview</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6 mb-8">
@@ -453,18 +453,18 @@ export default function AgencyDashboard({ theme, toggleTheme }) {
               <StatCard color="yellow" label="Active Orders" value={activeOrders} />
               <StatCard color="red" label="Cancelled Orders" value={cancelledOrders} />
             </div>
-            <div className={`p-5 rounded-xl shadow-md mb-8 ${theme === "light" ? "bg-gray-100" : "bg-gray-900"
+            <div className={`p-5 rounded-xl shadow-md mb-8 ${theme === "light" ? "bg-gray-500" : "bg-gray-900"
               }`}>
               <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
               <p className="text-3xl font-bold text-green-500">
                 ₹{revenue.toLocaleString("en-IN")}
               </p>
             </div>
-            <div className={`p-5 rounded-xl shadow-md ${theme === "light" ? "bg-gray-50" : "bg-gray-900"
+            <div className={`p-5 rounded-xl shadow-md ${theme === "light" ? "bg-black" : "bg-gray-900"
               }`}>
-              <h3 className="text-lg font-semibold mb-4">Booking Status Overview</h3>
+              <h3 className="text-lg text-white font-semibold mb-4">Booking Status Overview</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart
+               <BarChart
                   data={[
                     { name: "Delivered", value: deliveredOrders },
                     { name: "Active", value: activeOrders },
