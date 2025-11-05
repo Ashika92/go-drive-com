@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import CarItem from "./CarItem";
 import Filter from "./Filter";
-import { products } from "../data/cars"; // shared data
+import { products } from "../data/cars"; 
 
 const CarList = ({ userRole = "customer" }) => {
   const [cars, setCars] = useState(products);

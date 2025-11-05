@@ -3,7 +3,7 @@ import counterReducer from '../features/counter/counterSlice'
 import cartReducer from '../features/cart/cartSlice' 
 import wishlistReducer from "../features/wishlist/wishlistSlice";
 import ordersReducer from "../features/orders/ordersSlice" 
-import bookingsReducer from "../features/bookings/bookingsSlice"; // 🆕 add this line
+import bookingsReducer from "../features/bookings/bookingsSlice"; 
 
 export default configureStore({
   reducer: {
@@ -11,7 +11,7 @@ export default configureStore({
     cart: cartReducer,
     wishlist: wishlistReducer,
     orders: ordersReducer, 
-    bookings: bookingsReducer,   // 🆕 add this line
+    bookings: bookingsReducer,   
   }
 })
 

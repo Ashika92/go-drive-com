@@ -13,10 +13,10 @@ const CarDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // 🧠 Try to find car from main product list first
+  
   let car = products.find((c) => c.id === parseInt(id));
 
-  // 🧩 If not found, check Redux (cart/wishlist items)
+  
   const cartItems = useSelector((state) => state.cart.items);
   const wishlistItems = useSelector((state) => state.wishlist.items);
   if (!car) {
@@ -25,7 +25,7 @@ const CarDetails = () => {
       wishlistItems.find((c) => c.id === parseInt(id));
   }
 
-  // 🧾 If still not found, show error
+  
   if (!car) {
     return (
       <p className="text-center text-red-500 mt-10">
@@ -34,7 +34,7 @@ const CarDetails = () => {
     );
   }
 
-  // Simple fake details generator
+  
   const year = 2016 + (car.id % 8);
   const seats =
     car.name.toLowerCase().includes("innova") ||
@@ -67,7 +67,7 @@ const CarDetails = () => {
   else if (car.price <= 1500) pricePerHour = 179;
   else pricePerHour = 199;
 
-  // 🛒 Add to Cart handler
+  
   // 🛒 Add to Cart handler
 const handleAddToCart = () => {
   dispatch(
@@ -82,7 +82,7 @@ const handleAddToCart = () => {
     })
   );
 
-  // ✅ If this car exists in wishlist, remove it automatically
+  
   const isInWishlist = wishlistItems.some((item) => item.id === car.id);
   if (isInWishlist) {
     dispatch(removeFromWishlist(car.id));

@@ -1,4 +1,3 @@
-// src/features/orders/ordersSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 
@@ -10,7 +9,7 @@ const ordersSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
-    // ✅ Add new order (each car gets its own entry but keeps same structure)
+    // 
     addOrder: (state, action) => {
       const { items, totalAmount } = action.payload;
 
@@ -20,7 +19,7 @@ const ordersSlice = createSlice({
         expectedDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString(),
         status: "Ordered",
         price: car.price || totalAmount / items.length,
-        cars: [car], // ✅ keep cars as array so your UI still works (and shows image)
+        cars: [car], // 
       }));
 
       state.items.push(...newOrders);

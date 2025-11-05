@@ -3,8 +3,7 @@ import React from "react";
 export default function About() {
   return (
     <div className="min-h-screen  px-4">
-      {/* Center the content both horizontally and vertically,
-          and give equal space above/below with py-20 */}
+      
       <div className="max-w-3xl mx-auto text-center py-20">
         <h1 className="text-4xl font-bold mb-6">About Us</h1>
 

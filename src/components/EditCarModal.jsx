@@ -18,7 +18,7 @@ const EditCarModal = ({ car, onClose }) => {
   };
 
   return (
-    // Overlay (semi-transparent, adjusts per theme)
+    
     <div className="fixed inset-0 bg-gray-900/60 dark:bg-black/70 flex items-center justify-center z-50 transition-colors duration-300">
       {/* Modal container */}
       <div className="w-[90%] max-w-md rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700

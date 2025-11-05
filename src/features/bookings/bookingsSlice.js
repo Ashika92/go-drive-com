@@ -2,7 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  bookings: JSON.parse(localStorage.getItem("bookings")) || [], // ✅ Removed dummy data
+  bookings: JSON.parse(localStorage.getItem("bookings")) || [], // 
 };
 
 const bookingsSlice = createSlice({
@@ -11,17 +11,17 @@ const bookingsSlice = createSlice({
   reducers: {
     addBooking: (state, action) => {
       state.bookings.push(action.payload);
-      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // 
     },
     updateBookingStatus: (state, action) => {
       const { id, newStatus } = action.payload;
       const booking = state.bookings.find((b) => b.id === id);
       if (booking) booking.status = newStatus;
-      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist update
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // 
     },
     deleteBooking: (state, action) => {
       state.bookings = state.bookings.filter((b) => b.id !== action.payload);
-      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // ✅ Persist delete
+      localStorage.setItem("bookings", JSON.stringify(state.bookings)); // 
     },
     clearBookings: (state) => {
       state.bookings = [];

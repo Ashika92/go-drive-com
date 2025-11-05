@@ -59,7 +59,7 @@ function AddCarForm({ theme, onCancel }) {
     localStorage.setItem("agencyCars", JSON.stringify([...existingCars, newCar]));
 
     alert("✅ New car added successfully!");
-    onCancel(); // Close the form
+    onCancel(); 
   };
 
   return (
